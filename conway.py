@@ -2,16 +2,20 @@ import random
 from itertools import product
 import pygame as pg
 
-## CONFIG --------------------------
-seed = 80085_1015  # must be int or None for random
-size = width, height = 680, 520  # Window size [px]
-cell_size = 20  # [px]
+# CONFIG --------------------------
+seed = 80085_1012  # must be int or None for random
+size = width, height = 680, 520  # Window size in pixels
+cell_size = 20  # pixels
 initial_alive = 300  # The initial number of alive cells
 fps = 8  # slower is better so that you see the changes better
-## ---------------------------------
+# ---------------------------------
 
 
-def update_cells(universe, live_cells, neighbors):
+def update_cells(
+    universe,
+    live_cells,
+    neighbors=tuple(filter(lambda n: n != (0, 0), product((-1, 0, 1), repeat=2))),
+):
     next_gen = set()
     for cell in universe:
         ct = sum(tuple(map(sum, zip(cell, neigh))) in live_cells for neigh in neighbors)
@@ -37,10 +41,7 @@ def main(screen_size, initial_alive, seed):
     screen = pg.display.set_mode(screen_size)
     clock = pg.time.Clock()
 
-    universe = {
-        pos for pos in product(range(width // cell_size), range(height // cell_size))
-    }
-    neighbors = {pos for pos in product((-1, 0, 1), repeat=2) if pos != (0, 0)}
+    universe = set(product(range(width // cell_size), range(height // cell_size)))
     cells = set(random.sample(tuple(universe), min(initial_alive, len(universe))))
     while True:
         for event in pg.event.get():
@@ -49,7 +50,7 @@ def main(screen_size, initial_alive, seed):
 
         screen.fill(pg.Color("white"))
 
-        cells = update_cells(universe, cells, neighbors)
+        cells = update_cells(universe, cells)
         draw_cells(screen, universe, cells)
 
         pg.display.flip()
