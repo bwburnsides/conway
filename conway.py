@@ -14,7 +14,7 @@ fps = 8  # slower is better so that you see the changes better
 def update_cells(
     universe,
     live_cells,
-    neighbors=tuple(filter(lambda n: n != (0, 0), product((-1, 0, 1), repeat=2))),
+    neighbors=tuple(filter(any, product((-1, 0, 1), repeat=2))),
 ):
     next_gen = set()
     for cell in universe:
